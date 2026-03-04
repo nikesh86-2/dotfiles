@@ -26,6 +26,6 @@ default-timeout=5000
 [grouped]
 format=<b>%s (%g)</b>\n%b
 
-# Style for specific apps (optional)
+# Style for specific apps
 [app-name="Spotify"]
 border-color=#1db954
