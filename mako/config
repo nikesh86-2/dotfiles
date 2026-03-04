@@ -1,0 +1,31 @@
+# Global Settings
+anchor=top-right
+font=JetBrainsMono NF 11
+width=350
+margin=15
+padding=15
+border-size=2
+border-radius=15
+default-timeout=10000
+group-by=summary
+
+# Tokyo Night Colors
+background-color=#24283b
+text-color=#c0caf5
+border-color=#414868
+progress-color=over #2f334d
+
+[urgency=high]
+border-color=#f7768e
+default-timeout=0
+
+[urgency=low]
+border-color=#414868
+default-timeout=5000
+
+[grouped]
+format=<b>%s (%g)</b>\n%b
+
+# Style for specific apps (optional)
+[app-name="Spotify"]
+border-color=#1db954

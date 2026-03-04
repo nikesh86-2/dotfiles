@@ -1,0 +1,56 @@
+@import "../../.cache/wal/colors-waybar.css";
+
+* {
+    border: none;
+    font-family: "JetBrainsMono NF";
+    font-size: 14px;
+    text-shadow: 0px 0px 2px rgba(0,0,0,0.8);
+}
+
+window#waybar {
+    background-color: transparent;
+    margin: 10px 10px 10px 10px; /* Adds space around the bar */
+}
+
+/* Base style for all capsules */
+.modules-left, .modules-center, .modules-right {
+    background-color: @color0;
+    border: 1px solid @color8;
+    border-radius: 15px;
+    padding: 2px 10px;
+    margin-top: 5px;
+    /* This creates space BETWEEN the capsules */
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/* This creates spacing BETWEEN individual modules inside the capsules */
+#cpu, #memory, #temperature, #network, #pulseaudio, #battery, #clock, #workspaces {
+    padding: 0 8px;
+    margin: 0 4px;
+}
+
+/* Workspaces specific fix - prevents buttons from squishing */
+#workspaces button {
+    padding: 0 10px;
+    margin: 0 2px;
+    color: @color7;
+}
+
+#workspaces button.active {
+    color: @color0;
+    background-color: @color4;
+    border-radius: 10px;
+}
+
+/* Fix for overlapping text: ensures each module has a minimum width */
+label:focus {
+    background-color: @color0;
+}
+
+/* Colored Accents */
+#cpu { color: @color4; }
+#memory { color: @color5; }
+#pulseaudio { color: @color3; }
+#battery { color: @color2; }
+#clock { color: @color7; }

@@ -1,0 +1,107 @@
+{
+"layer": "top",
+"position": "top",
+"modules-left": ["idle_inhibitor", "cpu", "temperature", "memory", "battery", "pulseaudio", "custom/cap-left", "sway/workspaces"],
+"modules-center": ["sway/window"],
+"modules-right": ["wlr/taskbar", "custom/cap-right", "network", "clock","custom/wf-recorder", "custom/wlogout"],
+"sway/window": {
+},
+"battery": {
+  "min-length": 6,
+  "states": {
+  "good": 95,
+  "warning": 30,
+  "critical": 20,
+  },
+  "tooltip": true,
+  "full-at": 95,
+  "format-plugged": " {capacity}%",
+  "format-charging": "⚡ {capacity}%",
+  "format": "{icon} {capacity}%",
+  "format-icons": ["", "", "", "", ""],
+  "format-time": "{H}h:{M}m",
+},
+"clock": {
+  "format": " {:%a %b %d %H:%M}",
+  "tooltip": false,
+  "min-length": 18,
+},
+"network": {
+	"format-wifi": " {essid}",
+  "format-ethernet": " {ipaddr}",
+  "format-linked": " {ifname}",
+  "format-disconnected": "⚠ Disconnected",
+  "tooltip": false,
+  "max-length": 20,
+  "min-length": 16,
+	"on-click": "connman-gtk",
+},
+"pulseaudio": {
+  "tooltip": false,
+  "min-length": 7,
+  "format": "{icon} {volume}%",
+  "format-bluetooth": "{icon} {volume}%",
+  "format-muted": "    ",
+  "format-icons": {
+  "headphone": "",
+  "headset": "",
+  "default": ["", "", ""],
+  },
+  "on-click": "pavucontrol",
+},
+"idle_inhibitor": {
+	"format": "{icon}",
+	"format-icons": {
+	"activated": "",
+	"deactivated": "",
+  "min-length": 3,
+  },
+},
+"cpu": {
+  "interval": 2,
+	"format": " {usage}%",
+  "min-length": 6,
+},
+"temperature": {
+  "tooltip": false,
+	"format": " {temperatureC}°C",
+  "min-length": 6,
+},
+"memory": {
+	"format": " {percentage}%",
+  "min-length": 6,
+},
+"sway/workspaces": {
+},
+"custom/cap-left": {
+  "tooltip": false,
+	"format": "",
+},
+"custom/cap-right": {
+  "tooltip": false,
+	"format": "",
+},
+"custom/wlogout": {
+  "on-click": "wlogout",
+  "tooltip": false,
+        "format": "    ",
+},
+"wlr/taskbar": {
+    "format": "{icon}",
+    "icon-size": 22,
+    "icon-theme": "oranchelo-light",
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close"
+},
+"custom/wf-recorder": {
+		"format": "{}",
+		"interval": "once",
+		"exec": "echo ''",
+		"tooltip": "false",
+		"exec-if": "pgrep 'wf-recorder'",
+		"on-click": "exec ~/.config/sway/Scripts/wl-recorder.sh",
+		"signal": 8
+},
+}
+

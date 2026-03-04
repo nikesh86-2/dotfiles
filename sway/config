@@ -1,0 +1,162 @@
+### Variables
+set $mod Mod4
+set $term kitty
+set $gnome-schema org.gnome.desktop.interface
+
+# Home row direction keys (Vim-style)
+set $left g
+set $down j
+set $up k
+set $right o
+
+### Output Configuration
+# Use 'swaymsg -t get_outputs' to verify names
+output DP-2 resolution 1920x1080@60Hz position 0,0 transform 270 adaptive_sync on 
+output DP-1 resolution 2560x1440@94.999Hz position 1080,0 adaptive_sync on
+
+### Autostart Services
+# 1. Essential Environment Setup (Required for Dolphin/Waybar/Themes)
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+
+# 2. System Services
+exec nm-applet --indicator
+exec blueman-applet
+exec mako
+exec wl-paste -t text --watch clipman store --no-persist
+
+# 3. UI & Themes
+# We set GTK theme and import QT variables into the systemd session
+exec_always import_gsettings
+set $gnome-schema org.gnome.desktop.interface
+exec_always {
+    gsettings set $gnome-schema gtk-theme 'adw-gtk3'
+    gsettings set $gnome-schema icon-theme 'Papirus'
+    dbus-update-activation-environment --systemd QT_QPA_PLATFORM=wayland QT_STYLE_OVERRIDE=kvantum QT_QPA_PLATFORMTHEME=qt6ct
+    }
+
+# 4. Waybar Startup (Clean reload)
+exec_always "killall waybar; while pgrep -u $USER -x waybar >/dev/null; do sleep 0.5; done; waybar"
+
+# 5. Wallpaper Script (Run once)
+exec "~/.config/sway/scripts/wallpaper.sh"
+
+# Idle and Lock
+exec swayidle -w \
+    timeout 300 '~/.config/swaylock/script.sh' \
+    timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+    before-sleep '~/.config/swaylock/script.sh'
+
+### Input Configuration
+input * {
+    xkb_layout gb
+    xkb_variant extd
+    xkb_numlock enable
+}
+
+### Appearance
+default_border pixel 3
+smart_borders no_gaps
+floating_modifier $mod normal
+
+# Colors (Tokyo Night inspired)
+client.focused          #7aa2f7 #414868 #c0caf5 #7dcfff #7aa2f7
+client.focused_inactive #7aa2f7 #414868 #c0caf5 #7dcfff #7aa2f7
+client.unfocused        #414868 #24283b #a9b1d6 #7dcfff #414868
+client.urgent           #e0af68 #e0af68 #1d202f #7dcfff #e0af68
+
+### Key Bindings
+# Basics
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+q kill
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit Sway?' -b 'Yes' 'swaymsg exit'
+
+# Apps
+bindsym $mod+i exec google-chrome-stable 
+bindsym $mod+d exec fuzzel -f "JetBrainsMono NF" -D yes -i Papirus
+bindsym $mod+Shift+l exec ~/.config/swaylock/script.sh
+
+# Hardware Keys (Audio/Brightness)
+bindsym XF86MonBrightnessUp   exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym XF86AudioRaiseVolume  exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume  exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute         exec pactl set-sink-mute   @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute      exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+# Screenshots
+bindsym $mod+Print   exec ~/.config/sway/scripts/slurp.sh
+bindsym Print        exec ~/.config/sway/scripts/grim.sh
+bindsym $mod+shift+v exec ~/.config/sway/scripts/wl-recorder.sh
+
+# Focus Movement
+bindsym $mod+$left  focus left
+bindsym $mod+$down  focus down
+bindsym $mod+$up    focus up
+bindsym $mod+$right focus right
+bindsym $mod+Left   focus left
+bindsym $mod+Down   focus down
+bindsym $mod+Up     focus up
+bindsym $mod+Right  focus right
+
+# Moving Containers
+bindsym $mod+Shift+$left  move left
+bindsym $mod+Shift+$down  move down
+bindsym $mod+Shift+$up    move up
+bindsym $mod+Shift+$right move right
+
+# Layout Management
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+s layout stacking
+bindsym $mod+t layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+f floating toggle
+bindsym $mod+Shift+d focus mode_toggle
+bindsym $mod+a focus parent
+
+# Workspaces (1-10)
+bindcode $mod+10 workspace number 1
+bindcode $mod+11 workspace number 2
+bindcode $mod+12 workspace number 3
+bindcode $mod+13 workspace number 4
+bindcode $mod+14 workspace number 5
+bindcode $mod+15 workspace number 6
+bindcode $mod+16 workspace number 7
+bindcode $mod+17 workspace number 8
+bindcode $mod+18 workspace number 9
+bindcode $mod+19 workspace number 10
+
+bindcode $mod+Shift+10 move container to workspace number 1
+bindcode $mod+Shift+11 move container to workspace number 2
+bindcode $mod+Shift+12 move container to workspace number 3
+bindcode $mod+Shift+13 move container to workspace number 4
+bindcode $mod+Shift+14 move container to workspace number 5
+bindcode $mod+Shift+15 move container to workspace number 6
+bindcode $mod+Shift+16 move container to workspace number 7
+bindcode $mod+Shift+17 move container to workspace number 8
+bindcode $mod+Shift+18 move container to workspace number 9
+bindcode $mod+Shift+19 move container to workspace number 10
+
+# Scratchpad
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+### Modes
+mode "resize" {
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+    
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+### Window Rules
+for_window [title="(?:Open|Save) (?:File|Folder|As)"] floating enable, resize set width 1030 height 710
+for_window [app_id="(qalculate-gtk)"] floating enable, resize set width 1030 height 710
+
+include /etc/sway/config.d/*
