@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ###############################################################################
-# Space Wallpaper Rotator (Wallhaven + Pywal + Kvantum + Sway)
+# Space Wallpaper Rotator (Wallhaven + Pywal + Sway)
 # - SFW only
 # - Minimum 4K UHD (3840x2160)
 # - 16:9
@@ -13,10 +13,10 @@ set -euo pipefail
 # ---------- Config ----------
 INTERVAL_SECONDS=1200  # 20 minutes
 WALLPAPER_DIR="${HOME}/.config/Wallpapers"
-CURRENT_BASENAME="current_space"  # we store as current_space.<ext>
-KVANTUM_THEME_DIR="${HOME}/.config/Kvantum/Pywal"
+CURRENT_BASENAME="current_space"  # store as current_space.<ext>
+#KVANTUM_THEME_DIR="${HOME}/.config/Kvantum/Pywal"
 
-# SFW + general category only (cuts down portraits/anime/people results)
+# SFW + general category only 
 PURITY="100"       # safe only
 CATEGORIES="100"   # general only
 ATLEAST="3840x2160"
@@ -25,7 +25,7 @@ RATIOS="16x9"
 # Exclusions: astronauts + common people/portrait terms
 EXCLUDE='-astronaut -spacewalk -spacesuit -helmet -cosmonaut -portrait -face -person -people -human -man -woman -girl -boy -selfie -model -headshot -hands'
 
-# Rotating queries (edit/add to taste)
+# Rotating queries
 QUERIES=(
   'space OR nebula OR galaxy OR "deep space"'
   'milky way OR "night sky" OR astrophotography OR stargazing'
@@ -35,7 +35,7 @@ QUERIES=(
   '"space landscape" OR "alien world" OR "cosmic horizon"'
 )
 
-# Curl settings (a UA helps with some endpoints; timeouts prevent hangs)
+# Curl settings 
 CURL_COMMON=(-fsSL --connect-timeout 10 --max-time 30 -A "space-wallpaper-script/1.0")
 
 # ---------- Helpers ----------
@@ -49,7 +49,7 @@ need_cmd() {
 }
 
 urlencode_simple() {
-  # Simple URL encoding sufficient for our use: quotes->%22, spaces->+
+  # Simple URL encoding: quotes->%22, spaces->+
   # (Wallhaven search endpoint handles + well; OR terms are left as-is)
   sed 's/"/%22/g; s/ /+/g'
 }
@@ -61,19 +61,19 @@ get_random_query_url() {
   printf '%s' "$full" | urlencode_simple
 }
 
-# Determine extension from URL (best effort)
+# Determine extension from URL 
 ext_from_url() {
   local u="$1"
   u="${u%%\?*}"      # strip query string if present
   local ext="${u##*.}"
-  # sanity: only allow common image extensions
+  # only allow common image extensions
   case "${ext,,}" in
     jpg|jpeg|png|webp) printf '%s' "${ext,,}" ;;
     *) printf 'jpg' ;;
   esac
 }
 
-# ---------- Locking (prefer flock) ----------
+# ---------- Locking -------------------
 LOCKFILE="/tmp/wallpaper.lock"
 
 if command -v flock >/dev/null 2>&1; then
@@ -102,7 +102,7 @@ need_cmd shuf
 need_cmd find
 need_cmd mktemp
 
-# Optional commands (we won't fail if missing)
+# Optional commands
 HAVE_WAYBAR=0; command -v pkill  >/dev/null 2>&1 && HAVE_WAYBAR=1
 HAVE_MAKO=0;   command -v makoctl >/dev/null 2>&1 && HAVE_MAKO=1
 
@@ -170,21 +170,11 @@ while true; do
     log "Running pywal..."
     wal -i "$IMAGE_PATH" -n -q || log "wal failed (continuing)."
 
-    # 2) Sync Kvantum theme files (kvconfig + optional svg)
-    if [[ -f "${HOME}/.cache/wal/colors-kvantum.kvconfig" ]]; then
-      cp -f "${HOME}/.cache/wal/colors-kvantum.kvconfig" "${KVANTUM_THEME_DIR}/Pywal.kvconfig"
-      log "Updated Kvantum config."
-    fi
-    if [[ -f "${HOME}/.cache/wal/colors-kvantum.svg" ]]; then
-      cp -f "${HOME}/.cache/wal/colors-kvantum.svg" "${KVANTUM_THEME_DIR}/Pywal.svg"
-      log "Updated Kvantum SVG."
-    fi
-
-    # 3) Set wallpaper in Sway
+    # 2) Set wallpaper in Sway
     log "Setting wallpaper in Sway..."
     swaymsg -q output "*" bg "$IMAGE_PATH" fill >/dev/null 2>&1 || log "swaymsg failed (continuing)."
 
-    # 4) Reload UI elements
+    # 3) Reload UI elements
     if [[ $HAVE_WAYBAR -eq 1 ]]; then
       pkill -USR2 waybar 2>/dev/null || true
       log "Waybar reloaded."
