@@ -15,7 +15,7 @@ output DP-2 resolution 1920x1080@60Hz position 0,0 transform 270 adaptive_sync o
 output DP-1 resolution 2560x1440@94.999Hz position 1080,0 adaptive_sync on
 
 ### Autostart Services
-# 1. Essential Environment Setup (Required for Dolphin/Waybar/Themes)
+# 1. Environment Setup (Required for Dolphin/Waybar/Themes)
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # 2. System Services
@@ -25,7 +25,7 @@ exec mako
 exec wl-paste -t text --watch clipman store --no-persist
 
 # 3. UI & Themes
-# We set GTK theme and import QT variables into the systemd session
+# GTK theme and import QT variables into the systemd session
 exec_always import_gsettings
 set $gnome-schema org.gnome.desktop.interface
 exec_always {
@@ -85,9 +85,9 @@ bindsym XF86AudioMute         exec pactl set-sink-mute   @DEFAULT_SINK@ toggle
 bindsym XF86AudioMicMute      exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 # Screenshots
-bindsym $mod+Print   exec ~/.config/sway/scripts/slurp.sh
+bindsym $mod+Print   exec ~/.config/sway/scripts/slurp.sh # Selection box
 bindsym Print        exec ~/.config/sway/scripts/grim.sh
-bindsym $mod+shift+v exec ~/.config/sway/scripts/wl-recorder.sh
+bindsym $mod+shift+v exec ~/.config/sway/scripts/wl-recorder.sh # record screen
 
 # Focus Movement
 bindsym $mod+$left  focus left
