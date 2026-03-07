@@ -1,0 +1,18 @@
+# Backups
+*.bak
+*.save
+*.bk
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+*~
