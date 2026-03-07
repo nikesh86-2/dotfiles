@@ -54,6 +54,24 @@ This repository contains configuration files for various tools and applications 
 
 Feel free to fork and modify these configurations to suit your needs. The setup is modular, so you can pick and choose which parts to use.
 
+## Screenshots
+
+### Waybar
+![Waybar](screenshots/waybar.png)
+*Custom status bar showing system information and modules.*
+
+### Swaylock
+![Swaylock](screenshots/swaylock.png)
+*Screen locker with custom styling.*
+
+### Mako
+![Mako](screenshots/mako.png)
+*Notification daemon displaying system notifications.*
+
+### Fuzzel
+![Fuzzel](screenshots/fuzzel.png)
+*Application launcher with fuzzy search.*
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
