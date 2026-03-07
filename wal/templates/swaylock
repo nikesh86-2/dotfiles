@@ -1,0 +1,42 @@
+# Enhanced Pywal Swaylock Config (stable)
+
+# Indicator styling
+indicator-radius=120
+indicator-thickness=8
+line-uses-inside
+
+# Colors from Pywal
+key-hl-color={color4}
+caps-lock-bs-hl-color={color1}
+caps-lock-key-hl-color={color3}
+
+ring-color={color8}
+ring-clear-color={color2}
+ring-caps-lock-color={color5}
+ring-ver-color={color4}
+ring-wrong-color={color1}
+
+separator-color=00000000
+
+# Text Colors
+text-color={foreground}
+text-clear-color={foreground}
+text-caps-lock-color={foreground}
+text-ver-color={foreground}
+text-wrong-color={foreground}
+
+# Inside circle (ring background)
+inside-color={background}cc
+inside-clear-color={background}cc
+inside-caps-lock-color={background}cc
+inside-ver-color={background}cc
+inside-wrong-color={background}cc
+
+# Layout text (optional)
+layout-bg-color={background}cc
+layout-border-color={foreground}
+layout-text-color={foreground}
+
+# Optional: Disable caps-lock text but keep indicator
+disable-caps-lock-text
+indicator-caps-lock
