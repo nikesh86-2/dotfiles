@@ -4,9 +4,11 @@
 *.bk
 
 # Screenshots
-*.png
 *.jpg
 *.jpeg
+
+# allow screenshots directory images
+!screenshots/*.png
 
 # OS generated files
 .DS_Store
