@@ -1,12 +1,11 @@
 {
     "layer": "top",
-    "output": ["DP-1"],
     "width": 1420,
     "margin-top": 10,
 
-    "modules-left": ["cpu", "memory", "temperature", "bluetooth"],
+    "modules-left": ["cpu", "custom/gpu", "memory", "temperature", "bluetooth"],
     "modules-center": ["sway/workspaces"],
-    "modules-right": ["network", "pulseaudio", "battery", "clock", "tray"],
+    "modules-right": ["network", "pulseaudio", "battery", "custom/recorder", "clock", "tray"],
 
     "sway/workspaces": {
         "disable-scroll": true,
@@ -30,6 +29,12 @@
     },
 
     "cpu": { "interval": 5, "format": "󰍛 {usage}%" },
+    "custom/gpu": {
+        "exec": "~/.config/waybar/scripts/gpu.sh",
+        "return-type": "json",
+        "interval": 5,
+        "tooltip": true
+    },
     "memory": { "interval": 10, "format": " {used}GB" },
     "temperature": { "format": " {temperatureC}°C" },
     "bluetooth": {
@@ -52,6 +57,14 @@
         "states": { "warning": 30, "critical": 15 },
         "format": "{icon} {capacity}%",
         "format-icons": ["󰁻", "󰁽", "󰁿", "󰂁", "󰁹"]
+    },
+    "custom/recorder": {
+        "exec": "~/.config/sway/scripts/recorder-status.sh",
+        "return-type": "json",
+        "interval": "once",
+        "signal": 8,
+        "tooltip": true,
+        "on-click": "~/.config/sway/scripts/wl-recorder.sh -s"
     },
     "clock": { "format": "{:%H:%M | %a %d}" },
     "tray": { "icon-size": 16, "spacing": 10 }

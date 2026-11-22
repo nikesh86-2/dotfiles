@@ -1,4 +1,6 @@
-### Variables
+# ═══════════════════════════════════════════════════════════════════════
+#  VARIABLES
+# ═══════════════════════════════════════════════════════════════════════
 set $mod Mod4
 set $term kitty
 set $gnome-schema org.gnome.desktop.interface
@@ -9,114 +11,141 @@ set $down j
 set $up k
 set $right o
 
-### Output Configuration
+# ═══════════════════════════════════════════════════════════════════════
+#  OUTPUTS
+# ═══════════════════════════════════════════════════════════════════════
 # Use 'swaymsg -t get_outputs' to verify names
-output DP-2 resolution 1920x1080@60Hz position 0,0 transform 270 adaptive_sync on 
-output DP-1 resolution 2560x1440@94.999Hz position 1080,0 adaptive_sync on
 
-### Autostart Services
-# 1. Environment Setup (Required for Dolphin/Waybar/Themes)
+# Lenovo LOQ 27Q-10 (main monitor)
+output "Lenovo Group Limited LOQ 27Q-10 URW1K832" {
+    resolution 2560x1440@165Hz
+    position 0,0
+    adaptive_sync on
+}
+
+# WAN 27MQ95FSHDRU (secondary monitor)
+output "Invalid Vendor Codename - WAN 27MQ95FSHDRU Unknown" {
+    resolution 2560x1440@94.999Hz
+    position 2560,0
+    adaptive_sync on
+}
+
+# ═══════════════════════════════════════════════════════════════════════
+#  AUTOSTART
+# ═══════════════════════════════════════════════════════════════════════
+# ── Environment (required for Dolphin / Waybar / themes) ─────────────────
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+xwayland enable
 
-# 2. System Services
+# ── System applets & daemons ─────────────────────────────────────────────
 exec nm-applet --indicator
 exec blueman-applet
 exec mako
 exec wl-paste -t text --watch clipman store --no-persist
 
-# 3. UI & Themes
-# GTK theme and import QT variables into the systemd session
+# ── Themes (GTK / Qt) ────────────────────────────────────────────────────
 exec_always import_gsettings
-set $gnome-schema org.gnome.desktop.interface
 exec_always {
     gsettings set $gnome-schema gtk-theme 'adw-gtk3'
     gsettings set $gnome-schema icon-theme 'Papirus'
     dbus-update-activation-environment --systemd QT_QPA_PLATFORM=wayland QT_STYLE_OVERRIDE=kvantum QT_QPA_PLATFORMTHEME=qt6ct
-    }
+}
 
-# 4. Waybar Startup (Clean reload)
+# ── Waybar (clean restart) ───────────────────────────────────────────────
 exec_always "killall waybar; while pgrep -u $USER -x waybar >/dev/null; do sleep 0.5; done; waybar"
 
-# 5. Wallpaper Script (Run once)
-exec "~/.config/sway/scripts/wallpaper.sh"
+# ── Wallpaper (run once) ─────────────────────────────────────────────────
+exec ~/.config/sway/scripts/wallpaper.sh
 
-# Idle and Lock
+# ── Idle & lock ──────────────────────────────────────────────────────────
 exec swayidle -w \
-    timeout 300 '~/.config/swaylock/script.sh' \
-    timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-    before-sleep '~/.config/swaylock/script.sh'
+    timeout 300 '~/.config/swaylock/script.sh --fork' \
+    timeout 600 'pgrep -x swaylock >/dev/null || swaymsg "output * dpms off"' \
+        resume 'swaymsg "output * dpms on"' \
+    before-sleep '~/.config/swaylock/script.sh --fork' \
+    after-resume 'swaymsg "output * dpms on"'
 
-### Input Configuration
+# ═══════════════════════════════════════════════════════════════════════
+#  INPUT
+# ═══════════════════════════════════════════════════════════════════════
 input * {
     xkb_layout gb
     xkb_variant extd
     xkb_numlock enable
 }
 
-### Appearance
+# ═══════════════════════════════════════════════════════════════════════
+#  APPEARANCE
+# ═══════════════════════════════════════════════════════════════════════
 default_border pixel 3
 smart_borders no_gaps
 floating_modifier $mod normal
 
-# Colors (Tokyo Night inspired)
+# Tokyo Night palette
 client.focused          #7aa2f7 #414868 #c0caf5 #7dcfff #7aa2f7
-client.focused_inactive #7aa2f7 #414868 #c0caf5 #7dcfff #7aa2f7
+client.focused_inactive #3b4261 #292d4e #565f89 #3b4261 #292d4e
 client.unfocused        #414868 #24283b #a9b1d6 #7dcfff #414868
 client.urgent           #e0af68 #e0af68 #1d202f #7dcfff #e0af68
 
-### Key Bindings
-# Basics
-bindsym $mod+Return exec $term
-bindsym $mod+Shift+q kill
-bindsym $mod+Shift+c reload
-bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit Sway?' -b 'Yes' 'swaymsg exit'
+# ═══════════════════════════════════════════════════════════════════════
+#  KEY BINDINGS
+# ═══════════════════════════════════════════════════════════════════════
+# ── Basics ───────────────────────────────────────────────────────────────
+bindsym $mod+Return    exec $term
+bindsym $mod+Shift+q   kill
+bindsym $mod+Shift+c   reload
+bindsym $mod+Shift+e   exec swaynag -t warning -m 'Exit Sway?' -b 'Yes' 'swaymsg exit'
 
-# Apps
-bindsym $mod+i exec google-chrome-stable 
-bindsym $mod+d exec fuzzel -f "JetBrainsMono NF" -D yes -i Papirus
-bindsym $mod+Shift+l exec ~/.config/swaylock/script.sh
+# ── Apps ─────────────────────────────────────────────────────────────────
+bindsym $mod+i         exec env LIBVA_DRIVER_NAME=radeonsi google-chrome-stable --ozone-platform=wayland
+bindsym $mod+d         exec fuzzel
+bindsym $mod+Shift+l   exec ~/.config/swaylock/script.sh
 
-# Hardware Keys (Audio/Brightness)
-bindsym XF86MonBrightnessUp   exec brightnessctl set +5%
-bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
-bindsym XF86AudioRaiseVolume  exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-bindsym XF86AudioLowerVolume  exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-bindsym XF86AudioMute         exec pactl set-sink-mute   @DEFAULT_SINK@ toggle
-bindsym XF86AudioMicMute      exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+# ── Hardware keys (audio / brightness) ───────────────────────────────────
+bindsym XF86MonBrightnessUp    exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown  exec brightnessctl set 5%-
+bindsym XF86AudioRaiseVolume   exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume   exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute          exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute       exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
-# Screenshots
-bindsym $mod+Print   exec ~/.config/sway/scripts/slurp.sh # Selection box
-bindsym Print        exec ~/.config/sway/scripts/grim.sh
-bindsym $mod+shift+v exec ~/.config/sway/scripts/wl-recorder.sh # record screen
+# ── Screenshots & recording ──────────────────────────────────────────────
+bindsym $mod+Print     exec ~/.config/sway/scripts/slurp.sh
+bindsym Print          exec ~/.config/sway/scripts/grim.sh
+bindsym $mod+Shift+v   exec ~/.config/sway/scripts/wl-recorder.sh
 
-# Focus Movement
-bindsym $mod+$left  focus left
-bindsym $mod+$down  focus down
-bindsym $mod+$up    focus up
-bindsym $mod+$right focus right
-bindsym $mod+Left   focus left
-bindsym $mod+Down   focus down
-bindsym $mod+Up     focus up
-bindsym $mod+Right  focus right
+# ── Wallpaper ────────────────────────────────────────────────────────────
+# Ask the running rotator (wallpaper.sh) for an immediate new wallpaper
+bindsym $mod+Shift+w   exec ~/.config/sway/scripts/wallpaper-refresh.sh
 
-# Moving Containers
-bindsym $mod+Shift+$left  move left
-bindsym $mod+Shift+$down  move down
-bindsym $mod+Shift+$up    move up
-bindsym $mod+Shift+$right move right
+# ── Focus movement ───────────────────────────────────────────────────────
+bindsym $mod+$left     focus left
+bindsym $mod+$down     focus down
+bindsym $mod+$up       focus up
+bindsym $mod+$right    focus right
+bindsym $mod+Left      focus left
+bindsym $mod+Down      focus down
+bindsym $mod+Up        focus up
+bindsym $mod+Right     focus right
 
-# Layout Management
-bindsym $mod+h split h
-bindsym $mod+v split v
-bindsym $mod+s layout stacking
-bindsym $mod+t layout tabbed
-bindsym $mod+e layout toggle split
-bindsym $mod+f fullscreen
-bindsym $mod+Shift+f floating toggle
-bindsym $mod+Shift+d focus mode_toggle
-bindsym $mod+a focus parent
+# ── Moving containers ────────────────────────────────────────────────────
+bindsym $mod+Shift+$left   move left
+bindsym $mod+Shift+$down   move down
+bindsym $mod+Shift+$up     move up
+bindsym $mod+Shift+$right  move right
 
-# Workspaces (1-10)
+# ── Layout management ────────────────────────────────────────────────────
+bindsym $mod+f         fullscreen
+bindsym $mod+h         split h
+bindsym $mod+v         split v
+bindsym $mod+s         layout stacking
+bindsym $mod+t         layout tabbed
+bindsym $mod+e         layout toggle split
+bindsym $mod+Shift+f   floating toggle
+bindsym $mod+Shift+d   focus mode_toggle
+bindsym $mod+a         focus parent
+
+# ── Workspaces (1-10) ────────────────────────────────────────────────────
 bindcode $mod+10 workspace number 1
 bindcode $mod+11 workspace number 2
 bindcode $mod+12 workspace number 3
@@ -139,24 +168,29 @@ bindcode $mod+Shift+17 move container to workspace number 8
 bindcode $mod+Shift+18 move container to workspace number 9
 bindcode $mod+Shift+19 move container to workspace number 10
 
-# Scratchpad
-bindsym $mod+Shift+minus move scratchpad
-bindsym $mod+minus scratchpad show
+# ── Scratchpad ───────────────────────────────────────────────────────────
+bindsym $mod+minus        scratchpad show
+bindsym $mod+Shift+minus  move scratchpad
 
-### Modes
-mode "resize" {
-    bindsym $left resize shrink width 10px
-    bindsym $down resize grow height 10px
-    bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
-    
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
+# ═══════════════════════════════════════════════════════════════════════
+#  RESIZE MODE
+# ═══════════════════════════════════════════════════════════════════════
 bindsym $mod+r mode "resize"
 
-### Window Rules
+mode "resize" {
+    bindsym $left   resize shrink width 10px
+    bindsym $down   resize grow height 10px
+    bindsym $up     resize shrink height 10px
+    bindsym $right  resize grow width 10px
+
+    bindsym Return   mode "default"
+    bindsym Escape   mode "default"
+}
+
+# ═══════════════════════════════════════════════════════════════════════
+#  WINDOW RULES
+# ═══════════════════════════════════════════════════════════════════════
 for_window [title="(?:Open|Save) (?:File|Folder|As)"] floating enable, resize set width 1030 height 710
-for_window [app_id="(qalculate-gtk)"] floating enable, resize set width 1030 height 710
+for_window [app_id="(qalculate-gtk)"]                floating enable, resize set width 1030 height 710
 
 include /etc/sway/config.d/*
